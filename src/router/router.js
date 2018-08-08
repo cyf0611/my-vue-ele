@@ -11,6 +11,11 @@ export default [{
         {
             path: '',
             redirect: '/home'
+        },
+        //首页城市列表
+        {
+            path: '/home',
+            component: home
         }
         
     ]

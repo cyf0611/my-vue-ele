@@ -3,14 +3,40 @@
         <head-top signin_up="home">
             <span slot="logo" class="head_logo" @click="reload">ele.me</span>
         </head-top>
-        <h1>415151fcwef we651</h1>
+        <nav class="city_nav">
+            <div class="city_tip">
+                <span>定位当前城市: </span>
+                <span>定位不准时,请在城市列表选择</span>
+            </div>
+            <router-link :to="'/city/'+guessCityid" class="guess_city">
+                <span>{{guessCity}}</span>
+                <svg class="arrow_right">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
+                </svg>
+            </router-link>
+        </nav>
     </div>
 </template>
 
 <script>
     import headTop from '../../components/header/Head';
+    import {cityGuess, hotcity, groupcity} from '../../service/getDate'
+
     export default {
         name: 'Home',
+        data () {
+            return {
+                guessCity: '',   //当前城市
+                guessCityid: '' //当前城市id
+            }
+        },
+        mounted () {
+            //获取当前城市
+            cityGuess().then(res => {
+                this.guessCity = res.name;
+                this.guessCityid = res.id;
+            })
+        },
         components: {
             headTop
         },
