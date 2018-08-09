@@ -15,6 +15,29 @@
                 </svg>
             </router-link>
         </nav>
+        <section class="hot_city_container">
+            <div class="city_title">热门城市</div>
+            <ul class="citylistul">
+                <router-link tag="li" v-for="item in hotcity" :to="'/city/' + item.id" :key="item.id">
+                    {{ item.name }}
+                </router-link>
+            </ul>
+        </section>
+        <section class="group_city_container">
+            <ul class="letter_classify">
+                <li v-for="(value, key , index) in sortgroupcity" :key="key" class="letter_classify_li">
+                    <h4 class="city_title">{{key}}
+                        <span v-if="index==0">(按照字母排序)</span>
+                    </h4>
+                    <ul class="groupcity_name_container  citylistul clear">
+                        <router-link tag="li" v-for="item in value" :to="'/city/'+item.id" :key="item.id" class="ellipsis">
+                            {{ item.name }}
+                        </router-link>
+                    </ul>
+
+                </li>
+            </ul>
+        </section>
     </div>
 </template>
 
@@ -27,7 +50,9 @@
         data () {
             return {
                 guessCity: '',   //当前城市
-                guessCityid: '' //当前城市id
+                guessCityid: '', //当前城市id
+                hotcity: [],     //热门城市列表
+                groupcity: {},   //所有城市列表
             }
         },
         mounted () {
@@ -35,6 +60,15 @@
             cityGuess().then(res => {
                 this.guessCity = res.name;
                 this.guessCityid = res.id;
+            })
+
+            //获取热门城市
+            hotcity().then(res => {
+                this.hotcity = res;
+            })
+            //获取所有城市
+            groupcity().then(res => {
+                this.groupcity = res;
             })
         },
         components: {
@@ -44,6 +78,17 @@
             reload () {
                 window.location.reload();
             },
+        },
+        computed: {
+            sortgroupcity() {
+                let sortobj = {};
+                for (let i = 65; i <= 90; i++) {
+                    if (this.groupcity[String.fromCharCode(i)]) {
+                        sortobj[String.fromCharCode(i)] = this.groupcity[String.fromCharCode(i)];
+                    }
+                }
+                return sortobj
+            }
         }
     }
 </script>
