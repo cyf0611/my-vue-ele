@@ -1,7 +1,7 @@
 import App from '../App'
 
 const home = r => require.ensure([], () => {r(require('../page/home/Home'))}, 'home')
-
+const city = r => require.ensure([], () => {r(require('../page/city/City'))}, 'city')
 
 export default [{
     path: '/',
@@ -16,6 +16,10 @@ export default [{
         {
             path: '/home',
             component: home
+        },
+        {
+            path: '/city/:cityid',
+            component: city
         }
         
     ]
