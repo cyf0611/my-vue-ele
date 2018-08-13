@@ -44,3 +44,12 @@ export const searchplace = (cityid, value) => fetch('/v1/pois', {
     city_id: cityid,
     keyword: value
 })
+/**
+ * 获取图片验证码
+ */
+export const getcaptchas = () => fetch('/v1/captchas', {}, 'post');
+
+/**
+ * 账号密码登录
+ */
+export const accountLogin = (username, password, captcha_code) => fetch('/v2/login', {username, password, captcha_code}, 'post');
