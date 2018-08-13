@@ -15,7 +15,7 @@
             搜索历史
         </header>
         <ul class="getpois_ul">
-            <li v-for="(item, index) in placelist" :key="index" @click="">
+            <li v-for="(item, index) in placelist" :key="index" @click="nextPage(index, item.geohash)">
                 <h4 class="pois_name ellipsis">{{ item.name }}</h4>
                 <p class="pois_address ellipsis">{{ item.address }}</p>
             </li>
@@ -76,7 +76,28 @@
             clearAll() {
                 removeStore('placeHistory');
                 this.initData();
-            }
+            },
+            // 点击搜索列表,进行页面跳转,同时将改记录缓存到本地
+            nextPage (index, geohash) {
+                let history = getStore('placeHistory');
+                let choosePalce = this.placelist[index];
+                if(history) {
+                    let checkRepeat = false;
+                    this.placeHistory = JSON.parse(history);
+                    this.placeHistory.forEach(item => {
+                        if(item.geohash === geohash) {
+                            checkRepeat = true;
+                        }
+                    })
+                    if(!checkRepeat) {
+                        this.placeHistory.push(choosePalce);
+                    }
+                }else {
+                    this.placeHistory.push(choosePalce);
+                }
+                setStore('placeHistory', this.placeHistory);
+                this.$router.push({path:'/msite',query: {geohash}})
+            },
         }
     }
 </script>
