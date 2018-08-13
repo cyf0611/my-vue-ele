@@ -3,12 +3,31 @@
         <head-top :head-title="cityname" go-back="true">
             <router-link to="/home" slot="changecity" class="change_city">切换城市</router-link>
         </head-top>
+        <form class="city_form" @submit.prevent>
+            <div>
+                <input type="search" name="city" placeholder="输入学校、商务楼、地址" required v-model="inputVaule" class="city_input input_style">
+            </div>
+            <div>
+                <input type="submit" name="submit" class="city_submit input_style" @click='postpois' value="提交">
+            </div>
+        </form>
+        <header v-if="historytitle" class="pois_search_history">
+            搜索历史
+        </header>
+        <ul class="getpois_ul">
+            <li v-for="(item, index) in placelist" :key="index" @click="">
+                <h4 class="pois_name ellipsis">{{ item.name }}</h4>
+                <p class="pois_address ellipsis">{{ item.address }}</p>
+            </li>
+        </ul>
+        <footer v-if="historytitle&&placelist.length" @click="clearAll" class="clear_all_history">清空所有</footer>
     </div>
+
 </template>
 
 <script>
     import headTop from 'src/components/header/Head';
-    import { currentcity } from '../../service/getDate'
+    import { currentcity, searchplace } from '../../service/getDate'
     import { getStore, setStore, removeStore } from 'src/config/mUtils';
     export default {
         name: 'City',
@@ -25,6 +44,7 @@
         },
         mounted() {
             this.cityid = this.$route.params.cityid;
+            this.initData();
             //获取当前城市名字
             currentcity(this.cityid).then(res => {
                 this.cityname = res.name;
@@ -32,6 +52,31 @@
         },
         components: {
             headTop
+        },
+        methods: {
+            //获取本地搜索历史记录
+            initData() {
+                if(getStore('placeHistory')) {
+                    this.placelist = JSON.parse(getStore('placeHistory'));
+                }else {
+                    this.placelist = [];
+                }
+            },
+            //发送搜索信息inputVaule
+            postpois() {
+                //输入值不为空的时候才发送
+                if(this.inputVaule) {
+                    searchplace(this.cityid, this.inputVaule).then(res => {
+                        this.historytitle = false;
+                        this.placelist = res;
+                        this.placeNone = res.length? false : true;
+                    })
+                }
+            },
+            clearAll() {
+                removeStore('placeHistory');
+                this.initData();
+            }
         }
     }
 </script>
