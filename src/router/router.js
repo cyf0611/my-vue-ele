@@ -3,7 +3,7 @@ import App from '../App'
 const home = r => require.ensure([], () => {r(require('../page/home/Home'))}, 'home');
 const city = r => require.ensure([], () => {r(require('../page/city/City'))}, 'city');
 const login = r => require.ensure([], () => {r(require('../page/login/Login'))}, 'login');
-
+const forget = r => require.ensure([], () => {r(require('../page/forget/Forget'))}, 'forget')
 
 export default [{
     path: '/',
@@ -26,6 +26,10 @@ export default [{
         {
             path: '/login',
             component: login
+        },
+        {
+            path: '/forget',
+            component: forget
         }
         
     ]
