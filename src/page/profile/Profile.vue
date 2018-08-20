@@ -128,11 +128,16 @@
                 </router-link>
             </section>
         </section>
+        <foot-guide></foot-guide>
+        <transition name="router-slid" mode="out-in">
+            <router-view></router-view>
+        </transition>
     </div>
 </template>
 
 <script>
     import headTop from '../../components/header/Head'
+    import footGuide from '../../components/footer/FootGuide'
     import {mapState, mapMutations} from 'vuex'
     import {imgBaseUrl} from '../../config/env'
     import {getImgPath} from '../../components/common/mixin'
@@ -140,7 +145,8 @@
     export default {
         name: 'Profile',
         components: {
-            headTop
+            headTop,
+            footGuide
         },
         mounted() {
             this.initData();
