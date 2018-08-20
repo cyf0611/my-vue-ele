@@ -53,5 +53,14 @@ export default {
         state.userInfo = info;
         state.login = true;
         setStore('user_id', info.user_id);
+    },
+    //退出登录
+    [OUT_LOGIN](state) {
+        state.userInfo = {}
+        state.login = false
+    },
+    //保存图片
+    [SAVE_AVANDER](state, imgPath) {
+        state.imgPath = imgPath
     }
 }

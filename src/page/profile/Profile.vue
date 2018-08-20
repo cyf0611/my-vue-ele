@@ -186,6 +186,11 @@
                 }
 
             }
+        },
+        watch: {
+            userInfo(value) {
+                this.initData();
+            }
         }
     }
 </script>

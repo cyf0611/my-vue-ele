@@ -5,6 +5,8 @@ const city = r => require.ensure([], () => {r(require('../page/city/City'))}, 'c
 const login = r => require.ensure([], () => {r(require('../page/login/Login'))}, 'login');
 const forget = r => require.ensure([], () => {r(require('../page/forget/Forget'))}, 'forget')
 const profile = r => require.ensure([], () => {r(require('../page/profile/Profile'))}, 'profile')
+const info = r => require.ensure([], () => {r(require('../page/profile/children/Info'))}, 'info')
+
 export default [{
     path: '/',
     component: App, //顶层路由,对应index.html
@@ -33,7 +35,13 @@ export default [{
         },
         {
             path: '/profile',
-            component: profile
+            component: profile,
+            children: [
+                {
+                    path: 'info',
+                    component: info
+                }
+            ]
         }
         
     ]

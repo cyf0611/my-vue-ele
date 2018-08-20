@@ -58,3 +58,34 @@ export const accountLogin = (username, password, captcha_code) => fetch('/v2/log
  * 改密码
  */
 export const changePassword = (username, oldpassWord, newpassword, confirmpassword, captcha_code) => fetch('/v2/changepassword', {username, oldpassWord, newpassword, confirmpassword, captcha_code}, 'POST');
+
+/**
+ * 退出登录
+ */
+export const signout = () => fetch('/v2/signout');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
