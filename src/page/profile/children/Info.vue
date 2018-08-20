@@ -128,7 +128,7 @@
         },
         mixins: [getImgPath],
         mounted() {
-            this.username = this.userInfo.username;
+            //this.username = this.userInfo.username;
         },
         components: {
             headTop,

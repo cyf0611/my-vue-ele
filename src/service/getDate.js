@@ -64,7 +64,11 @@ export const changePassword = (username, oldpassWord, newpassword, confirmpasswo
  */
 export const signout = () => fetch('/v2/signout');
 
+/**
+ * 删除地址
+ */
 
+export const deleteAddress = (userid, addressid) => fetch( '/v1/users/' + userid + '/addresses/' + addressid, {}, 'DELETE')
 
 
 
