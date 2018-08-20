@@ -6,6 +6,7 @@ const login = r => require.ensure([], () => {r(require('../page/login/Login'))},
 const forget = r => require.ensure([], () => {r(require('../page/forget/Forget'))}, 'forget')
 const profile = r => require.ensure([], () => {r(require('../page/profile/Profile'))}, 'profile')
 const info = r => require.ensure([], () => {r(require('../page/profile/children/Info'))}, 'info')
+const setusername = r => require.ensure([], () => {r(require('../page/profile/children/children/Setusername'))}, 'setusername')
 
 export default [{
     path: '/',
@@ -39,7 +40,13 @@ export default [{
             children: [
                 {
                     path: 'info',
-                    component: info
+                    component: info,
+                    children: [
+                        {
+                            path: 'setusername',
+                            component: setusername
+                        }
+                    ]
                 }
             ]
         }

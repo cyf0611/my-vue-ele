@@ -62,5 +62,9 @@ export default {
     //保存图片
     [SAVE_AVANDER](state, imgPath) {
         state.imgPath = imgPath
-    }
+    },
+    //修改用户名
+    [RETSET_NAME](state,username) {
+        state.userInfo = Object.assign({}, state.userInfo,{username})
+    },
 }

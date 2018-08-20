@@ -19,7 +19,7 @@
                     </span>
                 </div>
             </section>
-            <router-link to="/profile/setusername" class="info-router">
+            <router-link to="/profile/info/setusername" class="info-router">
                 <section class="headportrait headportraitwo">
                     <h2>用户名</h2>
                     <div class="headportrait-div">
@@ -115,7 +115,7 @@
         name: 'Info',
         data() {
             return {
-                username:'',    //用户名
+                username: '',    //用户名
                 showAlert: false,
                 alertText: null,
                 imgBaseUrl,
@@ -127,6 +127,9 @@
             }
         },
         mixins: [getImgPath],
+        mounted() {
+            this.username = this.userInfo.username;
+        },
         components: {
             headTop,
             alertTip,
