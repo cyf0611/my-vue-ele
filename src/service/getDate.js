@@ -70,6 +70,48 @@ export const signout = () => fetch('/v2/signout');
 
 export const deleteAddress = (userid, addressid) => fetch( '/v1/users/' + userid + '/addresses/' + addressid, {}, 'DELETE')
 
+/**
+ *个人中心里编辑地址
+ */
+
+export const getAddressList = (user_id) => fetch('/v1/users/'+user_id+'/addresses')
+
+
+/**
+ * 添加地址
+ */
+
+export const postAddAddress = (userId, address, address_detail, geohash, name, phone, phone_bk, poi_type, sex, tag, tag_type) => fetch('/v1/users/' + userId + '/addresses', {
+    address,
+    address_detail,
+    geohash,
+    name,
+    phone,
+    phone_bk,
+    poi_type,
+    sex,
+    tag,
+    tag_type,
+}, 'POST');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

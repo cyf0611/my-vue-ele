@@ -34,7 +34,7 @@
 <script>
     import headTop from 'src/components/header/Head'
     import { mapState, mapActions } from 'vuex'
-    import { deleteAddress } from '../../../../service/getDate'
+    import { getAddressList, deleteAddress } from '../../../../service/getDate'
 
     export default {
         name: 'address',

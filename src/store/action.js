@@ -1,4 +1,4 @@
-import { getUser } from '../service/getDate'
+import { getAddressList, getUser } from '../service/getDate'
 import {
     GET_USERINFO,
     SAVE_ADDRESS
