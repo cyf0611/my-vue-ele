@@ -11,6 +11,9 @@ const address = r => require.ensure([], () => {r(require('../page/profile/childr
 const addAddress = r => require.ensure([], () => {r(require('../page/profile/children/children/children/Add'))}, 'addAddress')
 const addDetail = r => require.ensure([], () => {r(require('../page/profile/children/children/children/chilren/AddDetail'))}, 'addDetail')
 
+const balance = r => require.ensure([], () => {r(require('../page/balance/Balance'))}, 'balance')
+
+
 
 
 export default [{
@@ -68,8 +71,13 @@ export default [{
                             ]
                         }
                     ]
-                }
+                },
+                
             ]
+        },
+        {
+            path: 'balance',
+            component: balance,
         }
         
     ]
