@@ -8,6 +8,7 @@
                 <li v-for="(item, index) in removeAddress">
                     <div>
                         <p>{{item.address}}</p>
+                        <p><span>{{item.phone}}</span><span v-if="item.phonepk">、{{item.phonepk}}</span></p>
                     </div>
                     <div class="deletesite" v-if="deletesite">
                         <span @click="deleteSite(index, item)">X</span>
@@ -68,10 +69,10 @@
                 }
             },
             //删除地址
-            async deleteSite(index, item) {
-                if(this.userInfo && this.userInfo.user_id) {
+            async deleteSite(index, item){
+                if (this.userInfo && this.userInfo.user_id) {
                     await deleteAddress(this.userInfo.user_id, item.id);
-                    this.removeAddress.slice(index, 1);
+                    this.removeAddress.splice(index, 1);
                 }
             },
             //初始化信息

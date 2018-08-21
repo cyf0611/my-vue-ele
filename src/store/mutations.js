@@ -67,4 +67,16 @@ export default {
     [RETSET_NAME](state,username) {
         state.userInfo = Object.assign({}, state.userInfo,{username})
     },
+    //删除地址列表
+    [SAVE_ADDRESS](state, newAdress) {
+        state.removeAddress = newAdress
+    },
+    //添加地址name
+    [SAVE_ADDDETAIL](state, addAddress){
+        state.addAddress=addAddress;
+    },
+    //增加地址
+    [ADD_ADDRESS](state, obj) {
+        state.removeAddress = [obj, ...state.removeAddress];
+    },
 }

@@ -94,6 +94,21 @@ export const postAddAddress = (userId, address, address_detail, geohash, name, p
     tag_type,
 }, 'POST');
 
+/**
+ * 搜索地址
+ */
+
+export const searchNearby = keyword => fetch('/v1/pois', {
+    type: 'nearby',
+    keyword
+});
+
+
+
+
+
+
+
 
 
 
