@@ -14,6 +14,9 @@ const addDetail = r => require.ensure([], () => {r(require('../page/profile/chil
 const balance = r => require.ensure([], () => {r(require('../page/balance/Balance'))}, 'balance')
 const balanceDetail = r => require.ensure([], () => {r(require('../page/balance/children/Detail'))}, 'balanceDetail')
 
+const points = r => require.ensure([], () => {r(require('../page/points/Points'))}, 'points')
+const pointsDetail = r => require.ensure([], () => {r(require('../page/points/children/Detail'))}, 'pointsDetail')
+
 
 
 
@@ -77,12 +80,22 @@ export default [{
             ]
         },
         {
-            path: 'balance',
+            path: '/balance',
             component: balance,
             children: [
                 {
                     path: 'detail',
                     component: balanceDetail
+                }
+            ]
+        },
+        {
+            path: '/points',
+            component: points,
+            children: [
+                {
+                    path: 'detail',
+                    component: pointsDetail
                 }
             ]
         }
