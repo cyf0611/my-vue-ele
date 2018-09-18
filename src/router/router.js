@@ -17,8 +17,12 @@ const balanceDetail = r => require.ensure([], () => {r(require('../page/balance/
 const points = r => require.ensure([], () => {r(require('../page/points/Points'))}, 'points')
 const pointsDetail = r => require.ensure([], () => {r(require('../page/points/children/Detail'))}, 'pointsDetail')
 
+const benefit = r => require.ensure([], () => {r(require('../page/benefit/Benefit'))}, 'benefit')
+const hbDescription = r => require.ensure([], () => {r(require('../page/benefit/children/HbDescription'))}, 'hbDescription')
+const coupon = r => require.ensure([], () => {r(require('../page/benefit/children/Coupon'))}, 'coupon')
+const hbHistory = r => require.ensure([], () => {r(require('../page/benefit/children/HbHistory'))}, 'hbHistory')
 
-
+const download = r => require.ensure([], () => {r(require('../page/download/Download'))}, 'download')
 
 export default [{
     path: '/',
@@ -98,6 +102,28 @@ export default [{
                     component: pointsDetail
                 }
             ]
+        },
+        {
+            path: '/benefit',
+            component: benefit,
+            children: [
+                {
+                    path: 'hbDescription',
+                    component: hbDescription,
+                },
+                {
+                    path: 'coupon',
+                    component: coupon
+                },
+                {
+                    path: 'hbHistory',
+                    component: hbHistory
+                }
+            ]
+        },
+        {
+            path: '/download',
+            component: download
         }
         
     ]

@@ -103,6 +103,18 @@ export const searchNearby = keyword => fetch('/v1/pois', {
     keyword
 });
 
+/**
+ * 获取红包
+ */
+
+export const getHongbaoNum = id => fetch('/promotion/v2/users/' + id + '/hongbaos?limit=20&offset=0');
+
+/**
+ * 获取过期红包
+ */
+
+
+export const getExpired = id => fetch('/promotion/v2/users/' + id + '/expired_hongbaos?limit=20&offset=0');
 
 
 
