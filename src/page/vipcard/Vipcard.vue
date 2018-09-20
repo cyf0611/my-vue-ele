@@ -65,9 +65,7 @@
                 </section>
             </router-link>
         </section>
-        <transition name="router-slid" mode="out-in">
-            <router-view></router-view>
-        </transition>
+        <router-view></router-view>
     </div>
 </template>
 
