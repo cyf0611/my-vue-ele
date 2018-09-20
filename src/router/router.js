@@ -21,6 +21,14 @@ const benefit = r => require.ensure([], () => {r(require('../page/benefit/Benefi
 const hbDescription = r => require.ensure([], () => {r(require('../page/benefit/children/HbDescription'))}, 'hbDescription')
 const coupon = r => require.ensure([], () => {r(require('../page/benefit/children/Coupon'))}, 'coupon')
 const hbHistory = r => require.ensure([], () => {r(require('../page/benefit/children/HbHistory'))}, 'hbHistory')
+const exchange = r => require.ensure([], () => {r(require('../page/benefit/children/Exchange'))}, 'exchange')
+const commend = r => require.ensure([], () => {r(require('../page/benefit/children/Commend'))}, 'commend')
+const service = r => require.ensure([], () => {r(require('../page/service/Service'))}, 'service')
+const questionDetail = r => require.ensure([], () => {r(require('../page/service/children/QuestionDetail'))}, 'questionDetail')
+const vipcard = r => require.ensure([], () => {r(require('../page/vipcard/Vipcard'))}, 'vipcard')
+
+
+const order = r => require.ensure([], () => {r(require('../page/order/Order'))}, 'order')
 
 const download = r => require.ensure([], () => {r(require('../page/download/Download'))}, 'download')
 
@@ -118,12 +126,38 @@ export default [{
                 {
                     path: 'hbHistory',
                     component: hbHistory
+                },
+                {
+                    path: 'exchange',
+                    component: exchange
+                },
+                {
+                    path: 'commend',
+                    component: commend,
                 }
             ]
         },
         {
             path: '/download',
             component: download
+        },
+        {
+            path: '/order',
+            component: order,
+        },
+        {
+            path: '/service',
+            component: service,
+            children: [
+                {
+                    path: 'questionDetail',
+                    component: questionDetail
+                }
+            ]
+        },
+        {
+            path: '/vipcard',
+            component: vipcard
         }
         
     ]
