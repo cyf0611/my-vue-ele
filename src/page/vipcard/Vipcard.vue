@@ -46,7 +46,7 @@
                     <div class="apply_vip_buy_right" @click="buyCart">购买</div>
                 </section>
             </section>
-            <router-link to="/vipcard/useCart" class="header_style common_style">
+            <router-link to="/vipcard/useCard" class="header_style common_style">
                 <span class="header_left">兑换会员</span>
                 <section class="header_right">
                     <span>使用卡号卡密</span>

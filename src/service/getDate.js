@@ -131,6 +131,14 @@ export const exChangeHongbao = (id, exchange_code, captcha_code) => fetch('/v1/u
 
 export const getService = () => fetch('/v3/profile/explain');
 
+/**
+ *兑换会员卡
+ */
+
+export const vipCart = (id, number, password) => fetch('/member/v1/users/' + id + '/delivery_card/physical_card/bind',{
+    number,
+    password
+}, 'POST')
 
 
 

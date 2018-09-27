@@ -27,6 +27,7 @@ const service = r => require.ensure([], () => {r(require('../page/service/Servic
 const questionDetail = r => require.ensure([], () => {r(require('../page/service/children/QuestionDetail'))}, 'questionDetail')
 const vipcard = r => require.ensure([], () => {r(require('../page/vipcard/Vipcard'))}, 'vipcard')
 const vipDescription = r => require.ensure([], () => {r(require('../page/vipcard/children/VipDescription'))}, 'vipDescription')
+const useCard = r => require.ensure([], () => {r(require('../page/vipcard/children/UseCard'))}, 'useCard')
 
 const confirmOrder = r => require.ensure([], () => {r(require('../page/confirmOrder/ConfirmOrder'))}, 'confirmOrder')
 const payment = r => require.ensure([], () => {r(require('../page/confirmOrder/children/Payment'))}, 'payment')
@@ -165,6 +166,10 @@ export default [{
                 {
                     path: 'vipDescription',
                     component: vipDescription
+                },
+                {
+                    path: 'useCard',
+                    component: useCard
                 }
             ]
         },
