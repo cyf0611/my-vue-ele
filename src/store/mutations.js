@@ -92,4 +92,17 @@ export default {
     [BUY_CART](state, price) {
         state.cartPrice = price;
     },
+    // 记录当前经度纬度
+    [RECORD_ADDRESS](state, {
+        latitude,
+        longitude
+    }) {
+        state.latitude = latitude;
+        state.longitude = longitude;
+    },
+    //保存geohash
+    [SAVE_GEOHASH](state, geohash) {
+        state.geohash = geohash;
+        
+    },
 }

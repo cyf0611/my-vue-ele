@@ -140,8 +140,22 @@ export const vipCart = (id, number, password) => fetch('/member/v1/users/' + id 
     password
 }, 'POST')
 
+/**
+ * 获取msite页面地址信息
+ */
+
+export const msiteAdress = geohash => fetch('/v2/pois/' + geohash);
 
 
+/**
+ * 获取msite页面食品分类列表
+ */
+
+export const msiteFoodTypes = geohash => fetch('/v2/index_entry', {
+    geohash,
+    group_type: '1',
+    'flags[]': 'F'
+});
 
 
 

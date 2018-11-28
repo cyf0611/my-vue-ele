@@ -37,6 +37,10 @@ const order = r => require.ensure([], () => {r(require('../page/order/Order'))},
 
 const download = r => require.ensure([], () => {r(require('../page/download/Download'))}, 'download')
 
+
+const search = r => require.ensure([], () => {r(require('../page/search/Search'))}, 'search')
+
+const msite = r => require.ensure([], () => {r(require('../page/msite/Msite'))}, 'msite')
 export default [{
     path: '/',
     component: App, //顶层路由,对应index.html
@@ -44,24 +48,24 @@ export default [{
         //地址为空 跳转到home
         {
             path: '',
-            redirect: '/home'
+            redirect: '/home',
         },
         //首页城市列表
         {
             path: '/home',
-            component: home
+            component: home,
         },
         {
             path: '/city/:cityid',
-            component: city
+            component: city,
         },
         {
             path: '/login',
-            component: login
+            component: login,
         },
         {
             path: '/forget',
-            component: forget
+            component: forget,
         },
         {
             path: '/profile',
@@ -73,7 +77,7 @@ export default [{
                     children: [
                         {
                             path: 'setusername',
-                            component: setusername
+                            component: setusername,
                         },
                         {
                             path: 'address',
@@ -85,16 +89,16 @@ export default [{
                                     children: [
                                         {
                                             path: 'addDetail',
-                                            component: addDetail
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
+                                            component: addDetail,
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
                 },
-                
-            ]
+            
+            ],
         },
         {
             path: '/balance',
@@ -102,9 +106,9 @@ export default [{
             children: [
                 {
                     path: 'detail',
-                    component: balanceDetail
-                }
-            ]
+                    component: balanceDetail,
+                },
+            ],
         },
         {
             path: '/points',
@@ -112,9 +116,9 @@ export default [{
             children: [
                 {
                     path: 'detail',
-                    component: pointsDetail
-                }
-            ]
+                    component: pointsDetail,
+                },
+            ],
         },
         {
             path: '/benefit',
@@ -126,25 +130,25 @@ export default [{
                 },
                 {
                     path: 'coupon',
-                    component: coupon
+                    component: coupon,
                 },
                 {
                     path: 'hbHistory',
-                    component: hbHistory
+                    component: hbHistory,
                 },
                 {
                     path: 'exchange',
-                    component: exchange
+                    component: exchange,
                 },
                 {
                     path: 'commend',
                     component: commend,
-                }
-            ]
+                },
+            ],
         },
         {
             path: '/download',
-            component: download
+            component: download,
         },
         {
             path: '/order',
@@ -156,9 +160,9 @@ export default [{
             children: [
                 {
                     path: 'questionDetail',
-                    component: questionDetail
-                }
-            ]
+                    component: questionDetail,
+                },
+            ],
         },
         {
             path: '/vipcard',
@@ -174,8 +178,8 @@ export default [{
                 },
                 {
                     path: 'invoiceRecord',
-                    component: invoiceRecord
-                }
+                    component: invoiceRecord,
+                },
             ],
         },
         {
@@ -184,10 +188,18 @@ export default [{
             children: [
                 {
                     path: 'payment',
-                    component: payment
-                }
-            ]
+                    component: payment,
+                },
+            ],
+        },
+        {
+            path: '/search/:geohash',
+            component: search,
+        },
+        {
+            path: '/msite',
+            component: msite,
+            meta: {keepAlive: true}
         }
-        
-    ]
+    ],
 }]
