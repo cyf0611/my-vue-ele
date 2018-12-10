@@ -27,11 +27,22 @@
             </div>
             <img src="../../images/fl.svg" class="fl_back animation_opactiy" v-else>
         </nav>
+        <div class="shop_list_container">
+            <header class="shop_header">
+                <svg class="shop_icon">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#shop"></use>
+                </svg>
+                <span class="shop_header_title">附近商家</span>
+            </header>
+            <shop-list v-if="hasGetData" :geohash="geohash"></shop-list>
+        </div>
     </div>
 </template>
 
 <script>
     import headTop from 'src/components/header/Head'
+    import shopList from 'src/components/common/ShopList'
+
     import {cityGuess, msiteAdress, msiteFoodTypes} from '../../service/getDate'
     import {mapMutations} from 'vuex';
     import 'src/plugins/swiper.min.js'
@@ -47,7 +58,8 @@
             }
         },
         components: {
-            headTop
+            headTop,
+            shopList
         },
         async beforeMount() {
             if(!this.$route.query.geohash) {
@@ -57,18 +69,17 @@
                 this.geohash = this.$route.query.geohash;
             }
             //保存geohash
-            this.RECORD_ADDRESS = (this.geohash);
+            this.SAVE_GEOHASH(this.geohash);
             //获取位置
             let res = await msiteAdress(this.geohash);
             this.msietTitle = res.name;
             //记录当前经纬度
-            this.SAVE_GEOHASH(res);
-
+            this.RECORD_ADDRESS(res);
             this.hasGetData = true;
         },
         methods: {
             ...mapMutations([
-                'RECORD_ADDRESS', 'SAVE_GEOHASH',
+                'RECORD_ADDRESS', 'SAVE_GEOHASH'
             ]),
             // 解码url地址，求去restaurant_category_id值
             getCategoryId(url){

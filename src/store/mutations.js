@@ -99,6 +99,7 @@ export default {
     }) {
         state.latitude = latitude;
         state.longitude = longitude;
+        console.log('latitude', latitude);
     },
     //保存geohash
     [SAVE_GEOHASH](state, geohash) {
