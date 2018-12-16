@@ -41,6 +41,8 @@ const download = r => require.ensure([], () => {r(require('../page/download/Down
 const search = r => require.ensure([], () => {r(require('../page/search/Search'))}, 'search')
 
 const msite = r => require.ensure([], () => {r(require('../page/msite/Msite'))}, 'msite')
+const food =r => require.ensure([], () => {r(require('../page/food/Food'))}, 'food')
+
 export default [{
     path: '/',
     component: App, //顶层路由,对应index.html
@@ -200,6 +202,10 @@ export default [{
             path: '/msite',
             component: msite,
             meta: {keepAlive: true}
+        },
+        {
+            path: '/food',
+            component: food,
         }
     ],
 }]

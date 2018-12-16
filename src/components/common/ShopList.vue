@@ -1,7 +1,7 @@
 <template>
     <div class="shoplist_container">
         <ul v-load-more="loaderMore" v-if="shopListArr.length" >
-            <router-link :to="{path: 'shop', query:{geohash, id: item.id}}" v-for="item in shopListArr" :key="item.id" class="shop_li">
+            <router-link :to="{path: 'shop', query:{geohash, id: item.id}}" v-for="(item, index) in shopListArr" :key="index" class="shop_li">
                 <section>
                     <img :src="imgBaseUrl + item.image_path" class="shop_img">
                 </section>
@@ -94,7 +94,7 @@
             loading,
             ratingStart
         },
-        props: ['restaurantCategoryId', 'geohash'],
+        props: ['restaurantCategoryId', 'geohash', 'restaurantCategoryIds', 'sortByType','deliveryMode','selectStatus', 'supportIds'],
         mixins: [loadMore, getImgPath],
         computed: {
             ...mapState([
@@ -128,7 +128,8 @@
                 this.shopListArr = [...this.shopListArr, ...res];
 
                 //当数据数量小与20，说明没有更多数据了
-                if(res.length<= 20) {
+                console.log('res.length', res.length);
+                if(res.length< 20) {
                     this.touchend = true;
                     return;
                 }
@@ -152,6 +153,21 @@
             },
             backTop() {
                 animate(document.documentElement, {scrollTop: 0}, 400, 'ease-out')
+            },
+            //监听父元素传递的参数发生变化
+            async listenPropChange() {
+                this.showLoading = true;
+                this.offset = 0;
+                let res = await shopList(this.latitude, this.longitude, this.offset, '', this.restaurantCategoryIds, this.sortByType, this.deliveryMode, this.supportIds);
+                this.hideLoading();
+                this.shopListArr = [...res];
+            }
+        },
+        watch: {
+            selectStatus() {
+                this.touchend = false;
+                this.preventRepeatReuqest = false;
+                this.listenPropChange();
             }
         }
     }
