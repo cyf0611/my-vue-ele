@@ -42,6 +42,7 @@ const search = r => require.ensure([], () => {r(require('../page/search/Search')
 
 const msite = r => require.ensure([], () => {r(require('../page/msite/Msite'))}, 'msite')
 const food =r => require.ensure([], () => {r(require('../page/food/Food'))}, 'food')
+const shop = r => require.ensure([], () => {r(require('../page/shop/Shop'))}, 'food')
 
 export default [{
     path: '/',
@@ -206,6 +207,10 @@ export default [{
         {
             path: '/food',
             component: food,
+        },
+        {
+            path: '/shop',
+            component: shop
         }
     ],
 }]

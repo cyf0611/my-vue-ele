@@ -54,6 +54,7 @@
             </li>
         </ul>
         <p class="empty_data" v-if="touchend">没有更多了</p>
+        <p v-else class="empty_data">下拉加载更多...</p>
         <aside class="return_top" @click="backTop" v-if="showBackStatus">
             <svg class="back_top_svg">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#backtop"></use>
@@ -128,7 +129,6 @@
                 this.shopListArr = [...this.shopListArr, ...res];
 
                 //当数据数量小与20，说明没有更多数据了
-                console.log('res.length', res.length);
                 if(res.length< 20) {
                     this.touchend = true;
                     return;
@@ -161,11 +161,15 @@
                 let res = await shopList(this.latitude, this.longitude, this.offset, '', this.restaurantCategoryIds, this.sortByType, this.deliveryMode, this.supportIds);
                 this.hideLoading();
                 this.shopListArr = [...res];
+                if(res.length< 20) {
+                    this.touchend = true;
+                }
             }
         },
         watch: {
             selectStatus() {
                 this.touchend = false;
+                this.backTop();
                 this.preventRepeatReuqest = false;
                 this.listenPropChange();
             }

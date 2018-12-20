@@ -152,6 +152,7 @@
         },
         mounted() {
             this.initData();
+
         },
         computed: {
             ...mapState([

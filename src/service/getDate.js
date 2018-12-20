@@ -215,8 +215,22 @@ export const foodActivity = (latitude, longitude) => fetch('/shopping/v1/restaur
 });
 
 
+/**
+ * 获取shop页面商铺详情
+ */
 
+export const shopDetails = (shopid, latitude, longitude) => fetch('/shopping/restaurant/' + shopid, {
+    latitude,
+    longitude: longitude + '&extras[]=activities&extras[]=album&extras[]=license&extras[]=identification&extras[]=statistics'
+});
 
+/**
+ * 获取shop页面菜单列表
+ */
+
+export const foodMenu = restaurant_id => fetch('/shopping/v2/menu', {
+    restaurant_id
+});
 
 
 
