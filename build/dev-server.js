@@ -1,5 +1,6 @@
 var config = require('../config')
-if (!process.env.NODE_ENV) process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
+var configs = process.env.NODE_ENV === 'production' ? config.pro : config.dev;
+
 var path = require('path')
 var express = require('express')
 var webpack = require('webpack')
@@ -8,7 +9,7 @@ var proxyMiddleware = require('http-proxy-middleware')
 var webpackConfig = require('./webpack.dev.conf')
 
 // default port where dev server listens for incoming traffic
-var port = process.env.PORT || config.dev.port
+var port = process.env.PORT || configs.port
 // Define HTTP proxies to your custom API backend
 // https://github.com/chimurai/http-proxy-middleware
 
@@ -34,15 +35,16 @@ compiler.plugin('compilation', function(compilation) {
     })
 })
 
-var context = config.dev.context
+var context = configs.context
 
-switch(process.env.NODE_ENV){
-    case 'local': var proxypath = 'http://localhost:8001'; break;
-    case 'online': var proxypath = 'http://cangdu.org:8001'; break;
-    default:  var proxypath = config.dev.proxypath;
-}
+// switch(process.env.NODE_ENV){
+//     case 'local': var proxypath = 'http://localhost:8001'; break;
+//     case 'online': var proxypath = 'http://cangdu.org:8001'; break;
+//     default:  var proxypath = config.dev.proxypath;
+// }
+
 var options = {
-    target: proxypath,
+    target: configs.proxypath,
     changeOrigin: true,
 }
 if (context.length) {
@@ -60,7 +62,7 @@ server.use(devMiddleware)
 server.use(hotMiddleware)
 
 // serve pure static assets
-var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
+var staticPath = path.posix.join(configs.assetsPublicPath, configs.assetsSubDirectory)
 server.use(staticPath, express.static('./static'))
 
 module.exports = server.listen(port, function(err) {

@@ -122,21 +122,71 @@
                                                 <span>{{food.specfoods[0].price}}</span>
                                                 <span v-if="food.specifications.length">起</span>
                                             </section>
+                                            <buy-cart :shopId="shopId" :foods="food" @showMoveDot="showMoveDotFun" @showReduceTip="showReduceTip"></buy-cart>
                                         </footer>
                                     </section>
                                 </li>
                             </ul>
                         </section>
+                        <section class="buy_cart_container">
+                            <section @click="toggleCartList" class="cart_icon_num">
+                                <div :class="{cart_icon_activity: totalPrice > 0, move_in_cart:receiveInCart}" class="cart_icon_container">
+                                    <span v-if="totalNum" class="cart_list_length">
+                                        {{ totalNum }}
+                                    </span>
+                                    <svg class="cart_icon">
+                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-icon"></use>
+                                    </svg>
+                                </div>
+                                <div class="cart_num">
+                                    <div>¥ {{totalPrice}}</div>
+                                    <div>配送费¥{{deliveryFee}}</div>
+                                </div>
+                            </section>
+                            <section :class="{gotopay_acitvity: minimumOrderAmount <= 0}" class="gotopay">
+                                <span class="gotopay_button_style" v-if="minimumOrderAmount > 0">还差¥{{minimumOrderAmount}}起送</span>
+                                <router-link :to="{path: '/confirmOrder', query: {geohash, shopId}}" class="gotopay_button_style" v-else>去结算</router-link>
+                            </section>
+                        </section>
+                        <transition name="toggle-cart">
+                             <section v-show="showCartList&&cartFoodList.length" class="cart_food_list">
+                                <header>
+                                    <h4>购物车</h4>
+                                    <div @click="clearCart">
+                                        <svg>
+                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-remove"></use>
+                                        </svg>
+                                        <span class="clear_cart">清空</span>
+                                    </div>
+                                </header>
+                                 <section class="cart_food_details" id="cartFood">
+                                     <ul>
+                                         <li v-for="(item, index) in cartFoodList" :key="index" class="cart_food_li">
+                                             {{index}}
+                                         </li>
+                                     </ul>
+                                 </section>
+                             </section>
+                        </transition>
                     </section>
                 </section>
             </transition>
         </section>
+
+
+        <transition appear @before-appear="beforeEnter" @after-appear="afterEnter" v-for="(item, index) in showMoveDot" :key="index">
+            <span class="move_dot" v-if="item">
+                <svg class="move_liner">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-add"></use>
+                </svg>
+            </span>
+        </transition>
     </div>
 </template>
 
 <script>
     import ratingStar from 'src/components/common/RatingStart'
-
+    import buyCart from 'src/components/common/BuyCart'
 
     import {imgBaseUrl} from '../../config/env'
     import {mapState, mapMutations} from 'vuex'
@@ -158,10 +208,22 @@
                 menuIndex: 0, //已选菜单索引值，默认为0
                 categoryNum: [], //商品类型右上角已加入购物车的数量
                 TitleDetailIndex: null, //点击展示列表头部详情
+                showMoveDot: [], //控制下落的小圆点显示隐藏
+                elLeft: 0, //当前点击加按钮在网页中的绝对top值
+                elBottom: 0, //当前点击加按钮在网页中的绝对left值
+                cartFoodList: [], //购物车商品列表
+                totalPrice: 0, //总共价格
+                receiveInCart: false, //购物车组件下落的圆点是否到达目标位置
+                cartFoodList: [], //购物车商品列表
+                showCartList: false,//显示购物车列表
+                choosedFoods: null, //当前选中食品数据
+                showSpecs: false,//控制显示食品规格
+                specsIndex: 0, //当前选中的规格索引值
             }
         },
         components: {
-            ratingStar
+            ratingStar,
+            buyCart,
         },
         mounted() {
             this.geohash = this.$route.query.geohash;
@@ -174,6 +236,22 @@
             ]),
             promotionInfo() {
                 return this.shopDetailData.promotion_info || '欢迎光临，用餐高峰期请提前下单，谢谢。'
+            },
+            //购物车中总共商品的数量
+            totalNum() {
+                let num = 0;
+                this.cartFoodList.forEach(item => {
+                    num += item.num;
+                })
+                return num;
+            },
+            //配送费
+            deliveryFee() {
+                return this.shopDetailData ? this.shopDetailData.float_delivery_fee : null;
+            },
+            //还差多少元起送，为负数时显示去结算按钮
+            minimumOrderAmount() {
+                return this.shopDetailData ? this.shopDetailData.float_minimum_order_amount - this.totalPrice : null
             }
         },
         mixins: [
@@ -208,6 +286,40 @@
                 }else {
                     this.TitleDetailIndex = index;
                 }
+            },
+            showMoveDotFun(showMoveDot, elLeft, elBottom) {
+                this.showMoveDot = [...this.showMoveDot, ...showMoveDot];
+                this.elLeft = elLeft;
+                this.elBottom = elBottom;
+            },
+            beforeEnter(el) {
+                el.style.transform = `translate3d(0,${37 + this.elBottom - window.innerHeight}px,0)`;
+                el.children[0].style.transform = `translate3d(${this.elLeft - 30}px,0,0)`;
+                el.children[0].style.opacity = 0;
+            },
+            afterEnter(el) {
+                el.style.transform = 'translate3d(0,0,0)';
+                el.children[0].style.transform = `translate3d(0,0,0)`;
+                el.style.transition = 'transform .55s cubic-bezier(0.3, -0.25, 0.7, -0.15)';
+                el.children[0].style.transition = 'transform .55s linear';
+                this.showMoveDot = this.showMoveDot.map(item => false);
+                el.children[0].style.opacity = 1;
+            },
+            //清除购物车
+            clearCart() {
+
+            },
+            //显示规格列表
+            showChooseList(foods) {
+
+            },
+            //控制购物列表是否显示
+            toggleCartList() {
+                this.cartFoodList.length ? this.showCartList = !this.showCartList : true;
+            },
+            //显示提示，无法减去商品
+            showReduceTip() {
+
             }
         }
     }
@@ -411,7 +523,7 @@
     .food_container{
         display: flex;
         flex: 1;
-        padding-bottom: 2rem;
+        z-index: 10;
     }
     .menu_container{
         display: flex;
@@ -458,6 +570,9 @@
         .menu_right{
             flex: 4;
             overflow-y: auto;
+            >ul {
+                padding-bottom: 2rem;
+            }
             .menu_detail_header{
                 width: 100%;
                 padding: .4rem;

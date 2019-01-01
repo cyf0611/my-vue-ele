@@ -17,7 +17,7 @@ module.exports = {
     },
     output: {
         path: config.build.assetsRoot,
-        publicPath: process.env.NODE_ENV === 'production' ? config.build.assetsPublicPath : config.dev.assetsPublicPath,
+        publicPath: process.env.NODE_ENV === 'production' ? config.build.assetsPublicPath : config.pro.assetsPublicPath,
         filename: '[name].js'
     },
     resolve: {

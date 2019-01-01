@@ -6,19 +6,22 @@
  * imgBaseUrl: 图片所在域名地址
  *
  */
+var config = require('../../config')
+var configs = process.env.NODE_ENV === 'production' ? config.pro : config.dev;
 
-let baseUrl = '';
+let baseUrl = configs.proxypath;
 let routerMode = 'history';
-let imgBaseUrl = 'http://images.cangdu.org:8001/img/';
+let imgBaseUrl = configs.imgBaseUrl;
 
-
-if (process.env.NODE_ENV == 'development') {
-
-}else if(process.env.NODE_ENV == 'production'){
-    
-    // baseUrl = 'http://cangdu.org:8001';
-}
-
+console.log(process.env.NODE_ENV,'env.js');
+// if (process.env.NODE_ENV == 'development') {
+//     baseUrl = 'http://cangdu.org:8001'
+//     imgBaseUrl = ''
+//     //imgBaseUrl = 'http://localhost:8001/img/'
+// }else if(process.env.NODE_ENV == 'production'){
+//
+//     // baseUrl = 'http://cangdu.org:8001';
+// }
 export {
     baseUrl,
     routerMode,
