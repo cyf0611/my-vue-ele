@@ -2,7 +2,7 @@
     <section class="cart_module">
         <section v-if="!foods.specifications.length" class="cart_button" >
             <transition name="showReduce">
-                <span v-if="foodNum">
+                <span v-if="foodNum" @click="removeOutCart(foods.category_id, foods.item_id, foods.specfoods[0].food_id, foods.specfoods[0].name, foods.specfoods[0].price, '', foods.specfoods[0].packing_fee, foods.specfoods[0].sku_id, foods.specfoods[0].stock)">
                     <svg>
                         <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-minus"></use>
                     </svg>
@@ -46,8 +46,21 @@
             ...mapState([
                 'cartList'
             ]),
+            shopCart() {
+                return Object.assign({}, this.cartList[this.shopId]);
+            },
             foodNum() {
-
+                let category_id = this.foods.category_id;
+                let item_id = this.foods.item_id;
+                if(this.shopCart&&this.shopCart[category_id]&&this.shopCart[category_id][item_id]) {
+                    let num = 0;
+                    Object.values(this.shopCart[category_id][item_id]).forEach( item=> {
+                        num += item.num;
+                    });
+                    return num;
+                }else {
+                    return 0;
+                }
             }
         },
         methods: {
@@ -61,7 +74,7 @@
             },
             //显示规格列表
             showChooseList(foodScroll){
-                //this.$emit('showChooseList', foodScroll)
+                this.$emit('showChooseList', foodScroll)
             },
             //点击多规格商品的减按钮，弹出提示
             showReduceTip(){
@@ -74,6 +87,11 @@
                 let elBottom = event.target.getBoundingClientRect().bottom;
                 this.showMoveDot.push(true);
                 this.$emit('showMoveDot', this.showMoveDot, elLeft, elBottom);
+            },
+            removeOutCart(category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock) {
+                if (this.foodNum) {
+                    this.REDUCE_CART({shopid: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock});
+                }
             }
         }
     }

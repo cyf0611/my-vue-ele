@@ -17,7 +17,7 @@ module.exports = {
         productionGzip: false,
         productionGzipExtensions: ['js', 'css']
     },
-    dev: {
+    pro: {
         env: {
             NODE_ENV: '"development"'
         },
@@ -47,7 +47,7 @@ module.exports = {
         // just be aware of this issue when enabling this option.
         cssSourceMap: false
     },
-    pro: {
+    dev: {
         env: {
             NODE_ENV: '"production"'
         },

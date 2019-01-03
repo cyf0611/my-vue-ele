@@ -6,7 +6,7 @@
                     <polyline points="12,18 4,9 12,0" style="fill:none;stroke:rgb(255,255,255);stroke-width:3"/>
                 </svg>
             </nav>
-            <header class="shop_detail_header">
+            <header class="shop_detail_header" ref="shopheader">
                 <img :src="imgBaseUrl + shopDetailData.image_path" alt="" class="header_cover_img">
                 <section class="description_header">
                     <router-link to="/shop/shopDetail" class="description_top">
@@ -60,7 +60,7 @@
                     </svg>
                 </section>
             </transition>
-            <section class="change_show_type">
+            <section class="change_show_type" ref="chooseType">
                 <div>
                     <span :class='{activity_show: changeShowType =="food"}' @click="changeShowType='food'">商品</span>
                 </div>
@@ -71,14 +71,16 @@
             <transition name="fade-choose">
                 <section v-show="changeShowType=='food'" class="food_container">
                     <section class="menu_container">
-                        <section class="menu_left" id="wrapper_menu">
-                            <li class="menu_left_li" v-for="(item, index) in menuList" :key="index" :class="{activity_menu: index===menuIndex}">
-                                <img :src="getImgPath(item.icon_url)" v-if="item.icon_url">
-                                <span>{{item.name}}</span>
-                                <span class="category_num" v-if="categoryNum[index]">{{categoryNum[index]}}</span>
-                            </li>
+                        <section class="menu_left" id="wrapper_menu" ref="wrapperMenu">
+                            <ul>
+                                <li class="menu_left_li" v-for="(item, index) in menuList" :key="index" :class="{activity_menu: index == menuIndex}" @click="chooseMenu(index)" >
+                                    <img :src="getImgPath(item.icon_url)" v-if="item.icon_url">
+                                    <span>{{item.name}}</span>
+                                    <span class="category_num" v-if="categoryNum[index]">{{categoryNum[index]}}</span>
+                                </li>
+                            </ul>
                         </section>
-                        <section class="menu_right">
+                        <section class="menu_right" ref="menuFoodList">
                             <ul>
                                 <li v-for="(item, index) in menuList" :key="index">
                                     <header class="menu_detail_header">
@@ -122,7 +124,7 @@
                                                 <span>{{food.specfoods[0].price}}</span>
                                                 <span v-if="food.specifications.length">起</span>
                                             </section>
-                                            <buy-cart :shopId="shopId" :foods="food" @showMoveDot="showMoveDotFun" @showReduceTip="showReduceTip"></buy-cart>
+                                            <buy-cart :shopId="shopId" :foods="food" @showMoveDot="showMoveDotFun" @showReduceTip="showReduceTip" @showChooseList="showChooseList"></buy-cart>
                                         </footer>
                                     </section>
                                 </li>
@@ -162,18 +164,72 @@
                                  <section class="cart_food_details" id="cartFood">
                                      <ul>
                                          <li v-for="(item, index) in cartFoodList" :key="index" class="cart_food_li">
-                                             {{index}}
+                                             <div class="cart_list_num">
+                                                 <p class="ellipsis">{{item.name}}</p>
+                                                 <p class="ellipsis">{{item.specs}}</p>
+                                             </div>
+                                             <div class="cart_list_price">
+                                                 <span>¥</span>
+                                                 <span>{{item.price}}</span>
+                                             </div>
+                                             <section class="cart_list_control">
+                                                 <span @click="removeOutCart(item.category_id, item.item_id, item.food_id, item.name, item.price, item.specs)">
+                                                    <svg>
+                                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-minus"></use>
+                                                    </svg>
+                                                 </span>
+                                                 <span class="cart_num">{{item.num}}</span>
+                                                 <svg class="cart_add" @click="addToCart(item.category_id, item.item_id, item.food_id, item.name, item.price, item.specs)">
+                                                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-add"></use>
+                                                 </svg>
+                                             </section>
                                          </li>
                                      </ul>
                                  </section>
                              </section>
+                        </transition>
+                        <transition name="fade">
+                            <div class="screen_cover" v-show="showCartList&&cartFoodList.length" @click="toggleCartList"></div>
                         </transition>
                     </section>
                 </section>
             </transition>
         </section>
 
-
+        <section>
+            <transition name="fade">
+                <div class="specs_cover" @click="showChooseList" v-if="showSpecs"></div>
+            </transition>
+            <transition name="fadeBounce">
+                <div v-if="showSpecs" class="specs_list">
+                    <header class="specs_list_header">
+                        <h4 class="ellipsis">{{choosedFoods.name}}</h4>
+                        <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" version="1.1"class="specs_cancel" @click="showChooseList">
+                            <line x1="0" y1="0" x2="16" y2="16"  stroke="#666" stroke-width="1.2"/>
+                            <line x1="0" y1="16" x2="16" y2="0"  stroke="#666" stroke-width="1.2"/>
+                        </svg>
+                    </header>
+                    <section class="specs_details">
+                        <h5 class="specs_details_title">{{choosedFoods.specifications[0].name}}</h5>
+                        <ul>
+                            <li v-for="(item, index) in choosedFoods.specifications[0].values" :key="index" :class="{specs_activity: index == specsIndex}" @click="specsIndex = index">
+                                {{item}}
+                            </li>
+                        </ul>
+                    </section>
+                    <footer class="specs_footer">
+                        <div class="specs_price">
+                            <span>¥ </span>
+                            <span>{{choosedFoods.specfoods[specsIndex].price}}</span>
+                        </div>
+                        <div class="specs_addto_cart" @click="addSpecs(choosedFoods.category_id, choosedFoods.item_id, choosedFoods.specfoods[specsIndex].food_id, choosedFoods.specfoods[specsIndex].name, choosedFoods.specfoods[specsIndex].price, choosedFoods.specifications[0].values[specsIndex], choosedFoods.specfoods[specsIndex].packing_fee, choosedFoods.specfoods[specsIndex].sku_id, choosedFoods.specfoods[specsIndex].stock)">加入购物车</div>
+                    </footer>
+                </div>
+            </transition>
+        </section>
+        <transition name="fade">
+            <p class="show_delete_tip" v-if="showDeleteTip">多规格商品只能去购物车删除哦</p>
+        </transition>
         <transition appear @before-appear="beforeEnter" @after-appear="afterEnter" v-for="(item, index) in showMoveDot" :key="index">
             <span class="move_dot" v-if="item">
                 <svg class="move_liner">
@@ -181,23 +237,29 @@
                 </svg>
             </span>
         </transition>
+        <loading v-show="showLoading"></loading>
+        <section class="animation_opactiy shop_back_svg_container" v-if="showLoading">
+            <img src="../../images/shop_back_svg.svg">
+        </section>
     </div>
 </template>
 
 <script>
     import ratingStar from 'src/components/common/RatingStart'
     import buyCart from 'src/components/common/BuyCart'
+    import loading from 'src/components/common/Loading'
 
     import {imgBaseUrl} from '../../config/env'
     import {mapState, mapMutations} from 'vuex'
     import {msiteAdress, shopDetails, foodMenu} from '../../service/getDate'
     import {loadMore, getImgPath} from '../../components/common/mixin'
+    import BScroll from 'better-scroll'
 
     export default {
         name: 'Shop',
         data() {
             return {
-                showLoading: false,
+                showLoading: true,
                 imgBaseUrl,
                 shopDetailData: {}, //商铺详情
                 geohash: '', //geohash位置信息
@@ -206,6 +268,7 @@
                 changeShowType: 'food',//切换显示商品或者评价
                 menuList: [], //食品列表
                 menuIndex: 0, //已选菜单索引值，默认为0
+                menuIndexChange: true,//解决选中index时，scroll监听事件重复判断设置index的bug
                 categoryNum: [], //商品类型右上角已加入购物车的数量
                 TitleDetailIndex: null, //点击展示列表头部详情
                 showMoveDot: [], //控制下落的小圆点显示隐藏
@@ -219,11 +282,16 @@
                 choosedFoods: null, //当前选中食品数据
                 showSpecs: false,//控制显示食品规格
                 specsIndex: 0, //当前选中的规格索引值
+                showDeleteTip: false, //多规格商品点击减按钮，弹出提示框
+                foodScroll: null,  //食品列表scroll
+                shopListTop: [], //商品列表的高度集合
+                wrapperMenu: null,
             }
         },
         components: {
             ratingStar,
             buyCart,
+            loading,
         },
         mounted() {
             this.geohash = this.$route.query.geohash;
@@ -252,6 +320,24 @@
             //还差多少元起送，为负数时显示去结算按钮
             minimumOrderAmount() {
                 return this.shopDetailData ? this.shopDetailData.float_minimum_order_amount - this.totalPrice : null
+            },
+            //当前商店购物信息
+            shopCart() {
+                return {...this.cartList[this.shopId]};
+            },
+
+        },
+        watch: {
+            showLoading(value) {
+                if(!value) {
+                    this.$nextTick(() => {
+                        this.getFoodListHeight();
+                        this.initCategoryNum();
+                    })
+                }
+            },
+            shopCart(value) {
+                this.initCategoryNum();
             }
         },
         mixins: [
@@ -259,7 +345,7 @@
         ],
         methods: {
             ...mapMutations([
-                'RECORD_ADDRESS'
+                'RECORD_ADDRESS', 'ADD_CART', 'REDUCE_CART', 'CLEAR_CART'
             ]),
             goback() {
                 this.$router.go(-1);
@@ -276,6 +362,7 @@
                 //获取商铺食品列表
                 this.menuList = await foodMenu(this.shopId);
 
+                this.hideLoading();
             },
             showActivitiesFun() {
                 this.showActivities = !this.showActivities;
@@ -305,13 +392,18 @@
                 this.showMoveDot = this.showMoveDot.map(item => false);
                 el.children[0].style.opacity = 1;
             },
-            //清除购物车
+            //清空购物车
             clearCart() {
-
+                this.toggleCartList();
+                this.CLEAR_CART(this.shopId);
             },
             //显示规格列表
             showChooseList(foods) {
-
+                if(foods) {
+                    this.choosedFoods = foods;
+                }
+                this.showSpecs = !this.showSpecs;
+                this.specsIndex = 0;
             },
             //控制购物列表是否显示
             toggleCartList() {
@@ -319,7 +411,117 @@
             },
             //显示提示，无法减去商品
             showReduceTip() {
+                this.showDeleteTip = true;
+                clearTimeout(this.timer);
+                this.timer = setTimeout(() => {
+                    clearTimeout(this.timer);
+                    this.showDeleteTip = false;
+                }, 3000);
+            },
+            //初始化和shopCart变化时，重新获取购物车改变过的数据，赋值 categoryNum totalPrice  cartFoodList 整个数据流是自上而下的形式，所有的购物车数据都交给vuex处理，包括购物车组件中自身的商品数量，使整个数据流更加清晰
+            initCategoryNum() {
+                let newArr = [];
+                let cartFoodNum = 0;
+                this.totalPrice = 0;
+                this.cartFoodList = [];
+                this.menuList.forEach((item, index) => {
+                    if(this.shopCart&&this.shopCart[item.foods[0].category_id]) {
+                        let num = 0;
+                        Object.keys(this.shopCart[item.foods[0].category_id]).forEach(itemId => {
+                            Object.keys(this.shopCart[item.foods[0].category_id][itemId]).forEach(foodId => {
+                                let foodItem = this.shopCart[item.foods[0].category_id][itemId][foodId]
+                                num += foodItem.num
+                                if (item.type == 1) {
+                                    this.totalPrice += foodItem.price * foodItem.num
+                                    if (foodItem.num) {
+                                        this.cartFoodList[cartFoodNum] = {
+                                            category_id: item.foods[0].category_id,
+                                            item_id: itemId,
+                                            food_id: foodId,
+                                            num: foodItem.num,
+                                            price: foodItem.price,
+                                            name: foodItem.name,
+                                            specs: foodItem.specs,
+                                        }
+                                        cartFoodNum++
+                                    }
+                                }
+                            })
+                        })
+                        newArr.push(num);
+                    }else {
+                        newArr.push(0);
+                    }
+                })
 
+                this.totalPrice = this.totalPrice.toFixed(2);
+                this.categoryNum = [...newArr]
+            },
+            //多规格商品加入购物车
+            addSpecs(category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock) {
+                this.ADD_CART({shopid: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock});
+                this.showChooseList();
+            },
+            //加入购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格
+            addToCart(category_id, item_id, food_id, name, price, specs){
+                this.ADD_CART({shopid: this.shopId, category_id, item_id, food_id, name, price, specs});
+            },
+            //移出购物车，所需7个参数，商铺id，食品分类id，食品id，食品规格id，食品名字，食品价格，食品规格
+            removeOutCart(category_id, item_id, food_id, name, price, specs){
+                this.REDUCE_CART({shopid: this.shopId, category_id, item_id, food_id, name, price, specs});
+            },
+            //控制购物列表是否显示
+            toggleCartList() {
+                this.cartFoodList.length ? this.showCartList = !this.showCartList : true;
+            },
+            //点击左侧食品列表标题，相应列表移动到最顶层
+            chooseMenu(index) {
+                this.menuIndex = index;
+                //menuIndexChange解决运动时listenScroll依然监听的bug
+                this.menuIndexChange = false;
+                this.foodScroll.scrollTo(0, -this.shopListTop[index], 400);
+                this.foodScroll.on('scrollEnd', () => {
+                    this.menuIndexChange = true;
+                })
+            },
+            //获取食品列表的高度，存入shopListTop
+            getFoodListHeight() {
+                let baseHeight = this.$refs.shopheader.clientHeight;
+                let chooseTypeHeight = this.$refs.chooseType.clientHeight;
+                let listContainer = this.$refs.menuFoodList;
+                let listArr = Array.from(listContainer.children[0].children);
+
+                listArr.forEach((item, index) => {
+                    this.shopListTop[index] = item.offsetTop - baseHeight - chooseTypeHeight;
+                })
+                this.listenScroll(listContainer);
+            },
+            //滑动食品列表时候，监听scrollTop值来设置对应的食品列表标题的样式
+            listenScroll(element) {
+                this.foodScroll = new BScroll(element, {
+                    probeType: 3,
+                    deceleration: 0.001,
+                    bounce: false,
+                    swipeTime: 2000,
+                    click: true,
+                })
+
+                this.wrapperMenu = new BScroll('#wrapper_menu', {
+                    click: true,
+                });
+                this.foodScroll.on('scroll', pos => {
+                    this.shopListTop.forEach((item, index) => {
+                        if(this.menuIndexChange && Math.abs(Math.round(pos.y)) >= item) {
+                            this.menuIndex = index;
+                        }
+                    })
+                    let menuList = this.$refs.wrapperMenu.querySelectorAll('.activity_menu');
+                    this.wrapperMenu.scrollToElement(menuList[0], 800);
+                })
+            },
+            //隐藏动画
+            hideLoading() {
+                this.showLoading = false;
             }
         }
     }
@@ -1163,7 +1365,7 @@
         position: fixed;
         bottom: 30px;
         left: 30px;
-
+        z-index: 9999;
         svg{
             @include wh(.9rem, .9rem);
             fill: #3190e8;
