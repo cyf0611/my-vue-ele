@@ -132,7 +132,7 @@
                         </section>
                         <section class="buy_cart_container">
                             <section @click="toggleCartList" class="cart_icon_num">
-                                <div :class="{cart_icon_activity: totalPrice > 0, move_in_cart:receiveInCart}" class="cart_icon_container">
+                                <div :class="{cart_icon_activity: totalPrice > 0, move_in_cart:receiveInCart}" ref="cartContainer" class="cart_icon_container">
                                     <span v-if="totalNum" class="cart_list_length">
                                         {{ totalNum }}
                                     </span>
@@ -194,6 +194,70 @@
                     </section>
                 </section>
             </transition>
+            <transition name="fade-choose">
+                <section v-show="changeShowType == 'rating'" class="rating_container" id="ratingContainer" ref="ratingContainer">
+                    <section>
+                        <header class="rating_header">
+                            <section class="rating_header_left">
+                                <p>{{shopDetailData.rating}}</p>
+                                <p>综合评价</p>
+                                <p>高于周边商家{{(ratingScoresData.compare_rating*100).toFixed(1)}}%</p>
+                            </section>
+                            <section class="rating_header_right">
+                                <p>
+                                    <span>服务态度</span>
+                                    <rating-star :rating='ratingScoresData.service_score'></rating-star>
+                                    <span class="rating_num">{{ratingScoresData.service_score.toFixed(1)}}</span>
+                                </p>
+                                <p>
+                                    <span>菜品评价</span>
+                                    <rating-star :rating='ratingScoresData.food_score'></rating-star>
+                                    <span class="rating_num">{{ratingScoresData.food_score.toFixed(1)}}</span>
+                                </p>
+                                <p>
+                                    <span>送达时间</span>
+                                    <span class="delivery_time">{{ratingScoresData.deliver_time}}分钟</span>
+                                </p>
+                            </section>
+                        </header>
+                        <ul class="tag_list_ul">
+                            <li v-for="(item, index) in ratingTagsList" :key="index" :class="{unsatisfied: item.unsatisfied, tagActivity: ratingTageIndex==index }" @click="changeTgeIndex(index, item.name)">
+                                {{item.name}}({{item.count}})
+                            </li>
+                        </ul>
+                        <ul class="rating_list_ul" ref="rating_list_ul">
+                            <li v-for="(item, index) in ratingList" :key="index" class="rating_list_li">
+                                <img :src="getImgPath(item.avatar)" alt="" class="user_avatar">
+                                <section class="rating_list_details">
+                                    <header>
+                                        <section class="username_star">
+                                            <p class="username">{{item.username}}</p>
+                                            <p class="star_desc">
+                                                <rating-star :rating='item.rating_star'></rating-star>
+                                                <span class="time_spent_desc">{{item.time_spent_desc}}</span>
+                                            </p>
+                                        </section>
+                                        <time class="rated_at">{{item.rated_at}}</time>
+                                    </header>
+                                    <ul class="food_img_ul">
+                                        <li v-for="(item, index) in item.item_ratings" :key="index">
+                                            <img :src="getImgPath(item.image_hash)" v-if="item.image_hash">
+                                        </li>
+                                    </ul>
+                                    <ul class="food_name_ul">
+                                        <li v-for="(item, index) in item.item_ratings" :key="index" class="ellipsis">
+                                            {{item.food_name}}
+                                        </li>
+                                    </ul>
+                                </section>
+                            </li>
+                        </ul>
+                        <div class="loadMoreText" ref="loadMoreText">
+                            {{preventRepeatRequest ? '无更多数据' : '上拉加载更多...'}}
+                        </div>
+                    </section>
+                </section>
+            </transition>
         </section>
 
         <section>
@@ -237,7 +301,7 @@
                 </svg>
             </span>
         </transition>
-        <loading v-show="showLoading"></loading>
+        <loading v-show="showLoading || loadRatings"></loading>
         <section class="animation_opactiy shop_back_svg_container" v-if="showLoading">
             <img src="../../images/shop_back_svg.svg">
         </section>
@@ -251,7 +315,7 @@
 
     import {imgBaseUrl} from '../../config/env'
     import {mapState, mapMutations} from 'vuex'
-    import {msiteAdress, shopDetails, foodMenu} from '../../service/getDate'
+    import {msiteAdress, shopDetails, foodMenu, ratingScores, ratingTags, getRatingList} from '../../service/getDate'
     import {loadMore, getImgPath} from '../../components/common/mixin'
     import BScroll from 'better-scroll'
 
@@ -286,12 +350,24 @@
                 foodScroll: null,  //食品列表scroll
                 shopListTop: [], //商品列表的高度集合
                 wrapperMenu: null,
+                ratingScoresData: null, //评价总体分数
+                ratingTagsList: null, //评价分类列表
+                ratingTageIndex: 0, //评价分类索引
+                ratingOffset: 0, //评价获取数据offset值
+                ratingTagName: '',//评论的类型
+                ratingList: null, //评价列表
+                ratingScroll: null, //评论页Scroll
+                preventRepeatRequest: false,// 防止多次触发数据请求
+                loadRatings: false, //加载更多评论是显示加载组件
             }
         },
         components: {
             ratingStar,
             buyCart,
             loading,
+        },
+        created() {
+            this.INIT_BUYCART();
         },
         mounted() {
             this.geohash = this.$route.query.geohash;
@@ -338,14 +414,35 @@
             },
             shopCart(value) {
                 this.initCategoryNum();
+            },
+            //商品、评论切换状态
+            changeShowType(value) {
+                if(value === 'rating') {
+                    this.$nextTick(() => {
+                        this.ratingScroll = new BScroll('#ratingContainer', {
+                            probeType: 3,
+                            deceleration: 0.003,
+                            bounce: false,
+                            swipeTime: 2000,
+                            click: true,
+                        });
+                        this.ratingScroll.on('scroll', pos => {
+                            if(Math.abs(Math.round(pos.y)) >= Math.abs(Math.round(this.ratingScroll.maxScrollY))) {
+                                this.loaderMoreRating();
+                                this.ratingScroll.refresh();
+                            }
+                        })
+                    })
+                }
             }
         },
         mixins: [
-            getImgPath
+            getImgPath,
+            loadMore
         ],
         methods: {
             ...mapMutations([
-                'RECORD_ADDRESS', 'ADD_CART', 'REDUCE_CART', 'CLEAR_CART'
+                'RECORD_ADDRESS', 'ADD_CART', 'REDUCE_CART', 'CLEAR_CART', 'INIT_BUYCART', 'RECORD_SHOPDETAIL'
             ]),
             goback() {
                 this.$router.go(-1);
@@ -361,7 +458,14 @@
                 this.shopDetailData = await shopDetails(this.shopId, this.latitude, this.longitude);
                 //获取商铺食品列表
                 this.menuList = await foodMenu(this.shopId);
+                //获取商品评价
+                this.ratingScoresData = await ratingScores(this.shopId);
+                //获取tag列表
+                this.ratingTagsList = await ratingTags(this.shopId);
+                //获取评论列表
+                this.ratingList = await getRatingList(this.shopId)
 
+                this.RECORD_SHOPDETAIL(this.shopDetailData);
                 this.hideLoading();
             },
             showActivitiesFun() {
@@ -391,6 +495,13 @@
                 el.children[0].style.transition = 'transform .55s linear';
                 this.showMoveDot = this.showMoveDot.map(item => false);
                 el.children[0].style.opacity = 1;
+
+                el.children[0].addEventListener('transitionend', () => {
+                    this.listenInCart();
+                })
+                el.children[0].addEventListener('webkitAnimationEnd', () => {
+                    this.listenInCart();
+                })
             },
             //清空购物车
             clearCart() {
@@ -522,6 +633,42 @@
             //隐藏动画
             hideLoading() {
                 this.showLoading = false;
+            },
+            //获取不同类型的评论列表
+            async changeTgeIndex(index, name) {
+                this.ratingTageIndex = index;
+                this.ratingOffset = 0;
+                this.ratingTagName = name;
+
+                let res = await getRatingList(this.shopId, this.ratingOffset, name);
+                this.ratingList = [...res];
+
+
+            },
+            //监听圆点是否进入购物车
+            listenInCart() {
+                if(!this.receiveInCart) {
+                    this.receiveInCart = true;
+                    this.$refs.cartContainer.addEventListener('animationend', () => {
+                        this.receiveInCart = false;
+                    })
+                    this.$refs.cartContainer.addEventListener('webkitAnimationEnd', () => {
+                        this.receiveInCart = false;
+                    })
+                }
+            },
+            //加载更多评论
+            async loaderMoreRating() {
+               if(this.preventRepeatRequest) return;
+               this.preventRepeatRequest = true;
+               this.loadRatings = true;
+               this.ratingOffset += 10;
+               let ratingData = await getRatingList(this.shopId, this.ratingOffset, this.ratingTagName);
+               this.ratingList = [...this.ratingList, ...ratingData];
+               this.loadRatings = false;
+               if(ratingData.length >= 10) {
+                   this.preventRepeatRequest = false;
+               }
             }
         }
     }

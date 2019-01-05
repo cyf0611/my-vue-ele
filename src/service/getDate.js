@@ -232,9 +232,28 @@ export const foodMenu = restaurant_id => fetch('/shopping/v2/menu', {
     restaurant_id
 });
 
+/**
+ * 获取商铺评价分数
+ */
 
+export const ratingScores = shopid => fetch('/ugc/v2/restaurants/' + shopid + '/ratings/scores');
 
+/**
+ * 获取商铺评价分类
+ */
 
+export const ratingTags = shopid => fetch('/ugc/v2/restaurants/' + shopid + '/ratings/tags');
+
+/**
+ * 获取商铺评价列表
+ */
+
+export const getRatingList = (shopid, offset = 0, tag_name = '') => fetch('/ugc/v2/restaurants/' + shopid + '/ratings', {
+    has_content: true,
+    offset,
+    limit: 10,
+    tag_name
+});
 
 
 
