@@ -255,16 +255,73 @@ export const getRatingList = (shopid, offset = 0, tag_name = '') => fetch('/ugc/
     tag_name
 });
 
+/**
+ * 确认订单
+ */
+
+export const checkout = (geohash, entities, shopid) => fetch('/v1/carts/checkout', {
+    come_from: "web",
+    geohash,
+    entities,
+    restaurant_id: shopid,
+}, 'POST');
+
+/**
+ * 获取快速备注列表
+ */
+
+export const getRemark = (id, sig) => fetch('/v1/carts/' + id + '/remarks', {
+    sig
+});
+
+/**
+ * 下订单
+ */
+
+export const placeOrders = (user_id, cart_id, address_id, description, entities, geohash, sig) => fetch('/v1/users/' + user_id + '/carts/' + cart_id + '/orders', {
+    address_id,
+    come_from: "mobile_web",
+    deliver_time: "",
+    description,
+    entities,
+    geohash,
+    paymethod_id: 1,
+    sig,
+}, 'POST');
 
 
+/**
+ * 获取订单列表
+ */
+
+export const getOrderList = (user_id, offset) => fetch('/bos/v2/users/' + user_id + '/orders', {
+    limit: 10,
+    offset,
+});
+
+/**
+ * 重新发送订单验证码
+ */
+
+export const payRequest = (merchantOrderNo, userId) => fetch('/payapi/payment/queryOrder', {
+    merchantId: 5,
+    merchantOrderNo,
+    source: 'MOBILE_WAP',
+    userId,
+    version: '1.0.0',
+});
 
 
+/**
+ * 获取search页面搜索结果
+ */
 
-
-
-
-
-
+export const searchRestaurant = (geohash, keyword) => fetch('/v4/restaurants', {
+    'extras[]': 'restaurant_activity',
+    geohash,
+    keyword,
+    type: 'search'
+});
 
 
 

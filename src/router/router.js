@@ -8,7 +8,7 @@ const profile = r => require.ensure([], () => {r(require('../page/profile/Profil
 const info = r => require.ensure([], () => {r(require('../page/profile/children/Info'))}, 'info')
 const setusername = r => require.ensure([], () => {r(require('../page/profile/children/children/Setusername'))}, 'setusername')
 const address = r => require.ensure([], () => {r(require('../page/profile/children/children/Address'))}, 'address')
-const addAddress = r => require.ensure([], () => {r(require('../page/profile/children/children/children/Add'))}, 'addAddress')
+const add = r => require.ensure([], () => {r(require('../page/profile/children/children/children/Add'))}, 'add')
 const addDetail = r => require.ensure([], () => {r(require('../page/profile/children/children/children/chilren/AddDetail'))}, 'addDetail')
 
 const balance = r => require.ensure([], () => {r(require('../page/balance/Balance'))}, 'balance')
@@ -32,6 +32,11 @@ const invoiceRecord = r => require.ensure([], () => {r(require('../page/vipcard/
 
 const confirmOrder = r => require.ensure([], () => {r(require('../page/confirmOrder/ConfirmOrder'))}, 'confirmOrder')
 const payment = r => require.ensure([], () => {r(require('../page/confirmOrder/children/Payment'))}, 'payment')
+const chooseAddress = r => require.ensure([], () => {r(require('../page/confirmOrder/children/ChooseAddress'))}, 'chooseAddress')
+const remark = r => require.ensure([], () => {r(require('../page/confirmOrder/children/Remark'))}, 'remark')
+const invoice = r => require.ensure([], () => {r(require('../page/confirmOrder/children/Invoice'))}, 'invoice')
+const addAddress = r => require.ensure([], () => {r(require('../page/confirmOrder/children/children/AddAddress'))}, 'addAddress')
+const searchAddress = r => require.ensure([], () => {r(require('../page/confirmOrder/children/children/children/SearchAddress'))}, 'searchAddress')
 
 const order = r => require.ensure([], () => {r(require('../page/order/Order'))}, 'order')
 
@@ -43,6 +48,9 @@ const search = r => require.ensure([], () => {r(require('../page/search/Search')
 const msite = r => require.ensure([], () => {r(require('../page/msite/Msite'))}, 'msite')
 const food =r => require.ensure([], () => {r(require('../page/food/Food'))}, 'food')
 const shop = r => require.ensure([], () => {r(require('../page/shop/Shop'))}, 'food')
+const foodDetail = r => require.ensure([], () => {r(require('../page/shop/children/FoodDetail'))}, 'foodDetail')
+const shopDetail = r => require.ensure([], () => {r(require('../page/shop/children/ShopDetail'))}, 'shopDetail')
+const shopSafe = r => require.ensure([], () => {r(require('../page/shop/children/children/ShopSafe'))}, 'shopSafe')
 
 export default [{
     path: '/',
@@ -88,7 +96,7 @@ export default [{
                             children: [
                                 {
                                     path: 'add',
-                                    component: addAddress,
+                                    component: add,
                                     children: [
                                         {
                                             path: 'addDetail',
@@ -193,6 +201,30 @@ export default [{
                     path: 'payment',
                     component: payment,
                 },
+                {
+                    path: 'chooseAddress',
+                    component: chooseAddress,
+                    children: [
+                        {
+                            path: 'addAddress',
+                            component: addAddress,
+                            children: [
+                                {
+                                    path: 'searchAddress',
+                                    component: searchAddress
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    path: 'remark',
+                    component: remark,
+                },
+                {
+                    path: 'invoice',
+                    component: invoice,
+                }
             ],
         },
         {
@@ -210,7 +242,20 @@ export default [{
         },
         {
             path: '/shop',
-            component: shop
+            component: shop,
+            children: [{
+                path: 'foodDetail',
+                component: foodDetail
+            }, {
+                path: 'shopDetail',
+                component: shopDetail,
+                children: [
+                    {
+                        path: 'shopSafe',
+                        component: shopSafe
+                    }
+                ]
+            }]
         }
     ],
 }]

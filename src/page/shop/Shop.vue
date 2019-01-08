@@ -305,6 +305,9 @@
         <section class="animation_opactiy shop_back_svg_container" v-if="showLoading">
             <img src="../../images/shop_back_svg.svg">
         </section>
+        <transition name="router-slid" mode="out-in">
+            <router-view></router-view>
+        </transition>
     </div>
 </template>
 
@@ -340,7 +343,7 @@
                 elBottom: 0, //当前点击加按钮在网页中的绝对left值
                 cartFoodList: [], //购物车商品列表
                 totalPrice: 0, //总共价格
-                receiveInCart: false, //购物车组件下落的圆点是否到达目标位置
+                //receiveInCart: false, //购物车组件下落的圆点是否到达目标位置
                 cartFoodList: [], //购物车商品列表
                 showCartList: false,//显示购物车列表
                 choosedFoods: null, //当前选中食品数据
@@ -376,7 +379,7 @@
         },
         computed: {
             ...mapState([
-                'latitude', 'longitude','cartList'
+                'latitude', 'longitude', 'receiveInCart' ,'cartList'
             ]),
             promotionInfo() {
                 return this.shopDetailData.promotion_info || '欢迎光临，用餐高峰期请提前下单，谢谢。'
@@ -442,7 +445,7 @@
         ],
         methods: {
             ...mapMutations([
-                'RECORD_ADDRESS', 'ADD_CART', 'REDUCE_CART', 'CLEAR_CART', 'INIT_BUYCART', 'RECORD_SHOPDETAIL'
+                'RECORD_ADDRESS', 'ADD_CART', 'REDUCE_CART', 'CLEAR_CART', 'INIT_BUYCART', 'RECORD_SHOPDETAIL', 'SAVE_RECEIVEINCART'
             ]),
             goback() {
                 this.$router.go(-1);
@@ -495,7 +498,7 @@
                 el.children[0].style.transition = 'transform .55s linear';
                 this.showMoveDot = this.showMoveDot.map(item => false);
                 el.children[0].style.opacity = 1;
-
+                console.log(this.receiveInCart);
                 el.children[0].addEventListener('transitionend', () => {
                     this.listenInCart();
                 })
@@ -648,12 +651,13 @@
             //监听圆点是否进入购物车
             listenInCart() {
                 if(!this.receiveInCart) {
-                    this.receiveInCart = true;
+                    this.SAVE_RECEIVEINCART(true);
+                    //this.receiveInCart = true;
                     this.$refs.cartContainer.addEventListener('animationend', () => {
-                        this.receiveInCart = false;
+                        this.SAVE_RECEIVEINCART(false);
                     })
                     this.$refs.cartContainer.addEventListener('webkitAnimationEnd', () => {
-                        this.receiveInCart = false;
+                        this.SAVE_RECEIVEINCART(false);
                     })
                 }
             },
@@ -872,7 +876,6 @@
     .food_container{
         display: flex;
         flex: 1;
-        z-index: 10;
     }
     .menu_container{
         display: flex;
@@ -919,9 +922,6 @@
         .menu_right{
             flex: 4;
             overflow-y: auto;
-            >ul {
-                padding-bottom: 2rem;
-            }
             .menu_detail_header{
                 width: 100%;
                 padding: .4rem;
@@ -1512,7 +1512,7 @@
         position: fixed;
         bottom: 30px;
         left: 30px;
-        z-index: 9999;
+
         svg{
             @include wh(.9rem, .9rem);
             fill: #3190e8;

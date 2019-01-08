@@ -28,6 +28,7 @@ import {
     SAVE_QUESTION,
     ADD_ADDRESS,
     BUY_CART,
+    SAVE_RECEIVEINCART,
 } from './mutation-types.js'
 
 import {setStore, getStore} from '../config/mUtils'
@@ -239,6 +240,10 @@ export default {
     //会员卡价格纪录
     [BUY_CART](state, price) {
         state.cartPrice = price;
+    },
+    //保存 购物车组件下落的圆点是否到达目标位置
+    [SAVE_RECEIVEINCART](state, receiveInCart) {
+        state.receiveInCart = receiveInCart;
     },
     
 }

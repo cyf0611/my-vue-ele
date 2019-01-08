@@ -36,12 +36,14 @@
             </header>
             <shop-list v-if="hasGetData" :geohash="geohash"></shop-list>
         </div>
+        <foot-guide></foot-guide>
     </div>
 </template>
 
 <script>
     import headTop from 'src/components/header/Head'
     import shopList from 'src/components/common/ShopList'
+    import footGuide from 'src/components/footer/FootGuide'
 
     import {cityGuess, msiteAdress, msiteFoodTypes} from '../../service/getDate'
     import {mapMutations} from 'vuex';
@@ -59,7 +61,8 @@
         },
         components: {
             headTop,
-            shopList
+            shopList,
+            footGuide
         },
         async beforeMount() {
             if(!this.$route.query.geohash) {

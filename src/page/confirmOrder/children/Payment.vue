@@ -40,6 +40,8 @@
 <script>
     import headTop from 'src/components/header/Head'
     import alertTip from 'src/components/common/AlertTip'
+    import { mapState, mapMutations } from 'vuex'
+    import { payRequest } from '../../../service/getDate'
 
     export default {
         name: 'Payment',
@@ -49,16 +51,28 @@
         },
         data() {
             return {
-                countNum: 900,
+                payDetail: false, //付款信息详情
                 showAlert: false,
                 alertText: null,
-                payWay: 1,
+                payWay: 1, //付款方式
+                countNum: 900, //倒计时15分钟
+                gotoOrders: false, //去付款
+            }
+        },
+        created() {
+            this.initData();
+            //清除购物车中当前商铺的信息
+            if (this.shopid) {
+                this.CLEAR_CART(this.shopid);
             }
         },
         mounted() {
             this.remainingTime();
         },
         computed: {
+            ...mapState([
+                'orderMessage', 'userInfo', 'shopid', 'cartPrice'
+            ]),
             remaining() {
                 let minute = parseInt(this.countNum/60);
                 if (minute < 10) {
@@ -72,6 +86,9 @@
             }
         },
         methods: {
+            ...mapMutations([
+                'CLEAR_CART'
+            ]),
             remainingTime() {
                 clearInterval(this.timer);
                 this.timer = setInterval(() => {
@@ -88,6 +105,15 @@
                 this.showAlert = true;
                 this.alertText = '当前环境无法支付，请打开官方APP进行付款';
                 this.gotoOrders = true;
+            },
+            //初始化信息
+            async initData(){
+                this.payDetail = await payRequest(this.orderMessage.order_id, this.userInfo.user_id);
+                if (this.payDetail.message) {
+                    this.showAlert = true;
+                    this.alertText = this.payDetail.message;
+                    return
+                }
             },
         }
     }

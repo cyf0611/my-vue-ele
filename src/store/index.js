@@ -13,7 +13,7 @@ const state = {
     shopDetail: null, //商家详情信息
     userInfo: null, //用户信息
     shopid: null,//商铺id
-    remarkText: null,//可选备注内容
+    remarkText: {},//可选备注内容
     inputText: '',//输入备注内容
     invoice: false,//开发票
     newAddress: [], //确认订单页新的地址
@@ -33,6 +33,7 @@ const state = {
     addAddress:'',		//新增地址
     question: null,//问题详情
     cartPrice: null, //会员卡价格
+    receiveInCart: false, //购物车组件下落的圆点是否到达目标位置
 }
 
 export default new Vuex.Store({
